@@ -204,7 +204,7 @@ func (s *KubeConfigMapStore) ReadAllEntries(ctx context.Context) (result map[str
 	return
 }
 
-func (s *KubeConfigMapStore) ProcessChanges(ctx context.Context, dataMap **map[string]data.Object, lock *sync.Mutex) (err error) {
+func (s *KubeConfigMapStore) ProcessChanges(ctx context.Context, dataMap **map[string]data.Object, lock *sync.RWMutex) (err error) {
 	raw_opt := metav1.SingleObject(metav1.ObjectMeta{
 		Namespace: s.nameSpace,
 		Name:      s.name,
@@ -238,6 +238,48 @@ func (s *KubeConfigMapStore) ProcessChanges(ctx context.Context, dataMap **map[s
 					lock.Lock()
 					*dataMap = &map[string]data.Object{}
 					lock.Unlock()
+
+				default:
+
+				}
+
+			}
+		}
+	}()
+
+	return
+}
+
+func (s *KubeConfigMapStore) ProcessChangesWithFunction(ctx context.Context, function ProcessFunc) (err error) {
+	raw_opt := metav1.SingleObject(metav1.ObjectMeta{
+		Namespace: s.nameSpace,
+		Name:      s.name,
+	})
+	opt := clnt.ListOptions{}
+	opt.Raw = &raw_opt
+
+	watcher, err := s.client.Watch(ctx, &corev1.ConfigMapList{}, &opt)
+
+	go func() {
+		for {
+			event, open := <-watcher.ResultChan()
+			if open {
+				switch event.Type {
+				case watch.Added, watch.Modified:
+					configmap, _ := event.Object.(*corev1.ConfigMap)
+					newMap := map[string]data.Object{}
+					for k, value := range configmap.Data {
+						var object data.Object
+						err = (*s.jsonAPI).Unmarshal([]byte(value), &object)
+						if err != nil {
+							continue
+						}
+						newMap[k] = object
+					}
+					function(&newMap)
+
+				case watch.Deleted:
+					function(&map[string]data.Object{})
 
 				default:
 

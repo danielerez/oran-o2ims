@@ -10,6 +10,9 @@ import (
 
 var ErrNotFound = errors.New("not found")
 
+// process change function
+type ProcessFunc func(dataMap *map[string]data.Object)
+
 // interface for persistent storage
 type StorageOperations interface {
 	//notification from db to application about db entry changes
@@ -18,7 +21,8 @@ type StorageOperations interface {
 	AddEntry(ctx context.Context, key string, value string) (err error)
 	DeleteEntry(ctx context.Context, key string) (err error)
 	ReadAllEntries(ctx context.Context) (result map[string]data.Object, err error)
-	ProcessChanges(ctx context.Context, dataMap **map[string]data.Object, lock *sync.Mutex) (err error)
+	ProcessChanges(ctx context.Context, dataMap **map[string]data.Object, lock *sync.RWMutex) (err error)
+	ProcessChangesWithFunction(ctx context.Context, function ProcessFunc) (err error)
 }
 
 func Add(so StorageOperations, ctx context.Context, key string, value string) (err error) {
@@ -33,6 +37,10 @@ func GetAll(so StorageOperations, ctx context.Context) (result map[string]data.O
 func Delete(so StorageOperations, ctx context.Context, key string) (err error) {
 	return so.DeleteEntry(ctx, key)
 }
-func ProcessChanges(so StorageOperations, ctx context.Context, dataMap **map[string]data.Object, lock *sync.Mutex) (err error) {
+func ProcessChanges(so StorageOperations, ctx context.Context, dataMap **map[string]data.Object, lock *sync.RWMutex) (err error) {
 	return so.ProcessChanges(ctx, dataMap, lock)
+}
+
+func ProcessChangesWithFunction(so StorageOperations, ctx context.Context, function ProcessFunc) (err error) {
+	return so.ProcessChangesWithFunction(ctx, function)
 }

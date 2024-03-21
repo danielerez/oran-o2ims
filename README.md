@@ -283,3 +283,36 @@ Above example will get a list of existing alarm subscriptions
 
 Inside _VS Code_ use the _Run and Debug_ option with the `start
 alarm-subscription-server` [configuration](.vscode/launch.json).
+
+
+#### Alarm Notification server
+
+The alarm-notification-server should use together with alarm subscription server. The alarm subscription sever accept and manages the alarm subscriptions. The alarm notificaton servers synch the alarm subscriptions via perisist storage. To use the configmap to persist the subscriptions, the namespace "orantest" should be created at hub cluster for now (will use official oranims namespace in future). The alarm notification server accept the alerts, match the subscription filter, build and send out the alarm notification based on url in the subscription.
+
+Start the alarm notification server with a command like this:
+
+```
+$./oran-o2ims start alarm-notification-server \
+--log-file="servers.log" \
+--log-level="debug" \
+--log-field="server=alarm-notification" \
+--log-field="pid=%p" \
+--api-listener-address="127.0.0.1:8010" \
+--metrics-listener-address="127.0.0.1:8011" \
+--cloud-id="123" 
+```
+
+Note that by default all the servers listen on `localhost:8000`, so there will
+be conflicts if you try to run multiple servers in the same machine. The
+`--api-listener-address` and `--metrics-listener-address` options are used to select a port number that isn't in use.
+
+The `cloud-id` is any string that you want to use as identifier of the O-Cloud instance.
+
+For more information about other command line flags use the `--help` command:
+
+```
+$ ./oran-o2ims start alarm-notification-server --help
+```
+
+Inside _VS Code_ use the _Run and Debug_ option with the `start
+alarm-notification-server` [configuration](.vscode/launch.json).
