@@ -30,8 +30,29 @@ type subscriptionInfo struct {
 	consumerSubscriptionId string
 }
 
-// This file contains oran alarm notification serer search for matched subscriptions
-// at 1st step apply linear search
+// This file contains oran alarm notification serer searcher funcality for matching subscriptions
+// at 1st step linear search
+
+type alarmSubscriptionSearcherBuilder struct {
+	logger *slog.Logger
+	jqTool *jq.Tool
+}
+
+func newAlarmSubscriptionSearcherBuilder() *alarmSubscriptionSearcherBuilder {
+	return &alarmSubscriptionSearcherBuilder{}
+}
+
+func (b *alarmSubscriptionSearcherBuilder) SetLogger(
+	value *slog.Logger) *alarmSubscriptionSearcherBuilder {
+	b.logger = value
+	return b
+}
+func (b *alarmSubscriptionSearcherBuilder) SetJqTool(
+	value *jq.Tool) *alarmSubscriptionSearcherBuilder {
+	b.jqTool = value
+	return b
+}
+
 type alarmSubscriptionSearcher struct {
 	logger *slog.Logger
 	jqTool *jq.Tool
@@ -44,32 +65,7 @@ type alarmSubscriptionSearcher struct {
 	selectorParser *search.SelectorParser
 }
 
-func (b *alarmSubscriptionSearcher) SetLogger(
-	value *slog.Logger) *alarmSubscriptionSearcher {
-	b.logger = value
-	return b
-}
-
-func (b *alarmSubscriptionSearcher) SetJqTool(
-	value *jq.Tool) *alarmSubscriptionSearcher {
-	b.jqTool = value
-	return b
-}
-
-func (b *alarmSubscriptionSearcher) SetSelectorParser(
-	parser *search.SelectorParser) *alarmSubscriptionSearcher {
-	b.selectorParser = parser
-	return b
-}
-
-func newAlarmSubscriptionSearcher() *alarmSubscriptionSearcher {
-	return &alarmSubscriptionSearcher{}
-}
-
-func (b *alarmSubscriptionSearcher) build() {
-	b.subscriptionInfoMap = &map[string]subscriptionInfo{}
-	b.pathIndexMap = &map[string]alarmSubIdSet{}
-	b.noFilterSubsSet = &alarmSubIdSet{}
+func (b *alarmSubscriptionSearcherBuilder) build() (result *alarmSubscriptionSearcher, err error) {
 
 	// Create the filter expression parser:
 	selectorParser, err := search.NewSelectorParser().
@@ -82,7 +78,17 @@ func (b *alarmSubscriptionSearcher) build() {
 		)
 		return
 	}
-	b.selectorParser = selectorParser
+
+	result = &alarmSubscriptionSearcher{
+		logger:              b.logger,
+		jqTool:              b.jqTool,
+		subscriptionInfoMap: &map[string]subscriptionInfo{},
+		pathIndexMap:        &map[string]alarmSubIdSet{},
+		noFilterSubsSet:     &alarmSubIdSet{},
+		selectorParser:      selectorParser,
+	}
+
+	return
 }
 
 // NOTE the function should be called by a function that is holding the semophone

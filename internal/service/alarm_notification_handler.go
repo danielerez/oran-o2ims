@@ -147,8 +147,12 @@ func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 		return
 	}
 
-	alarmSubscriptionSearcher := newAlarmSubscriptionSearcher()
-	alarmSubscriptionSearcher.SetLogger(b.logger).SetJqTool(jqTool).build()
+	alarmSubscriptionSearcher, err := newAlarmSubscriptionSearcherBuilder().
+		SetLogger(b.logger).
+		SetJqTool(jqTool).build()
+	if err != nil {
+		return
+	}
 
 	// create persist storeage option
 	persistStore := persiststorage.NewKubeConfigMapStore().
