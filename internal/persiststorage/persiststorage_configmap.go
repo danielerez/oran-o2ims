@@ -15,7 +15,7 @@ import (
 )
 
 type KubeConfigMapStore struct {
-	nameSpace  string
+	namespace  string
 	name       string
 	fieldOwner string
 	jsonAPI    *jsoniter.API
@@ -26,9 +26,9 @@ func NewKubeConfigMapStore() *KubeConfigMapStore {
 	return &KubeConfigMapStore{}
 }
 
-func (b *KubeConfigMapStore) SetNameSpace(
+func (b *KubeConfigMapStore) SetNamespace(
 	ns string) *KubeConfigMapStore {
-	b.nameSpace = ns
+	b.namespace = ns
 	return b
 }
 func (b *KubeConfigMapStore) SetName(
@@ -61,7 +61,7 @@ func (s *KubeConfigMapStore) AddEntry(ctx context.Context, entryKey string, valu
 	configmap := &corev1.ConfigMap{}
 
 	key := clnt.ObjectKey{
-		Namespace: s.nameSpace,
+		Namespace: s.namespace,
 		Name:      s.name,
 	}
 	err = (*s.client).Get(ctx, key, configmap)
@@ -84,7 +84,7 @@ func (s *KubeConfigMapStore) AddEntry(ctx context.Context, entryKey string, valu
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Namespace: s.nameSpace,
+			Namespace: s.namespace,
 			Name:      s.name,
 		},
 		Data: savedData,
@@ -100,7 +100,7 @@ func (s *KubeConfigMapStore) DeleteEntry(ctx context.Context, entryKey string) (
 	configmap := &corev1.ConfigMap{}
 
 	key := clnt.ObjectKey{
-		Namespace: s.nameSpace,
+		Namespace: s.namespace,
 		Name:      s.name,
 	}
 	err = (*s.client).Get(ctx, key, configmap)
@@ -129,7 +129,7 @@ func (s *KubeConfigMapStore) DeleteEntry(ctx context.Context, entryKey string) (
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Namespace: s.nameSpace,
+			Namespace: s.namespace,
 			Name:      s.name,
 		},
 		Data: configmap.Data,
@@ -145,7 +145,7 @@ func (s *KubeConfigMapStore) ReadEntry(ctx context.Context, entryKey string) (va
 	configmap := &corev1.ConfigMap{}
 
 	key := clnt.ObjectKey{
-		Namespace: s.nameSpace,
+		Namespace: s.namespace,
 		Name:      s.name,
 	}
 	err = (*s.client).Get(ctx, key, configmap)
@@ -176,7 +176,7 @@ func (s *KubeConfigMapStore) ReadAllEntries(ctx context.Context) (result map[str
 	configmap := &corev1.ConfigMap{}
 
 	key := clnt.ObjectKey{
-		Namespace: s.nameSpace,
+		Namespace: s.namespace,
 		Name:      s.name,
 	}
 	err = (*s.client).Get(ctx, key, configmap)
@@ -206,7 +206,7 @@ func (s *KubeConfigMapStore) ReadAllEntries(ctx context.Context) (result map[str
 
 func (s *KubeConfigMapStore) ProcessChanges(ctx context.Context, dataMap **map[string]data.Object, lock *sync.RWMutex) (err error) {
 	raw_opt := metav1.SingleObject(metav1.ObjectMeta{
-		Namespace: s.nameSpace,
+		Namespace: s.namespace,
 		Name:      s.name,
 	})
 	opt := clnt.ListOptions{}
@@ -252,7 +252,7 @@ func (s *KubeConfigMapStore) ProcessChanges(ctx context.Context, dataMap **map[s
 
 func (s *KubeConfigMapStore) ProcessChangesWithFunction(ctx context.Context, function ProcessFunc) (err error) {
 	raw_opt := metav1.SingleObject(metav1.ObjectMeta{
-		Namespace: s.nameSpace,
+		Namespace: s.namespace,
 		Name:      s.name,
 	})
 	opt := clnt.ListOptions{}
