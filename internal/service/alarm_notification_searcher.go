@@ -189,6 +189,8 @@ func (h *alarmNotificationHandler) getSubscriptionIdsFromAlarm(ctx context.Conte
 		path = fmt.Sprintf(`.%s`, path)
 		err := h.jqTool.Evaluate(path, alarm, &alarmPath)
 
+		//when error != nil
+		//the path does not match we do not need to go next step
 		if err == nil {
 			for subId := range subSet {
 
