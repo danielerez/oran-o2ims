@@ -227,7 +227,7 @@ func (h *alarmNotificationHandler) recoveryFromPersistStore(ctx context.Context)
 }
 
 func (h *alarmNotificationHandler) watchPersistStore(ctx context.Context) (err error) {
-	err = persiststorage.ProcessChangesWithFunction(h.persistStore, ctx, ProcessStorageChanges)
+	err = persiststorage.ProcessChangesWithFunction(h.persistStore, ctx, h.processStorageChanges)
 
 	if err != nil {
 		h.logger.Error(
@@ -259,14 +259,14 @@ func (h *alarmNotificationHandler) assignSubscriptionMap(newMap *map[string]data
 	return
 }
 
-func ProcessStorageChanges(newMap *map[string]data.Object) {
-	if singleAlarmNotificationHandle == nil {
-		panic("Notification handler is nil")
-	}
-	err := singleAlarmNotificationHandle.assignSubscriptionMap(newMap)
+func (h *alarmNotificationHandler) processStorageChanges(newMap *map[string]data.Object) {
+
+	//err := singleAlarmNotificationHandle.assignSubscriptionMap(newMap)
+	err := h.assignSubscriptionMap(newMap)
 
 	if err != nil {
-		singleAlarmNotificationHandle.logger.Error(
+		//singleAlarmNotificationHandle.logger.Error(
+		h.logger.Error(
 			"alarmNotificationHandler failed to watch persist store changes ",
 			slog.String("error", err.Error()),
 		)
