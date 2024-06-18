@@ -163,7 +163,9 @@ func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 	httpClient := http.Client{Timeout: 2 * time.Second}
 
 	if singleAlarmNotificationHandle != nil {
-		panic("There is an existing handler instance")
+		b.logger.Error(
+			"alarmNotificationHandler build: the singleAlarmNotificationHandle is not nil return",
+		)
 	}
 	// Create and populate the object:
 	result = &alarmNotificationHandler{
@@ -178,9 +180,6 @@ func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 		persistStore:              persistStore,
 		subscriptionSearcher:      alarmSubscriptionSearcher,
 		httpClient:                httpClient,
-	}
-	if singleAlarmNotificationHandle != nil {
-		panic("There is an existing handler instance")
 	}
 	singleAlarmNotificationHandle = result
 
@@ -227,7 +226,10 @@ func (h *alarmNotificationHandler) watchPersistStore(ctx context.Context) (err e
 	err = persiststorage.ProcessChangesWithFunction(h.persistStore, ctx, ProcessStorageChanges)
 
 	if err != nil {
-		panic("failed to launch watcher")
+		h.logger.Error(
+			"alarmNotificationHandler watchPersistStore failed ",
+			slog.String("error", err.Error()),
+		)
 	}
 	return
 }

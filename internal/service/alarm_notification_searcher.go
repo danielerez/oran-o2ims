@@ -131,7 +131,11 @@ func (b *alarmSubscriptionSearcher) pocessSubscriptionMapForSearcher(subscriptio
 		var uris string
 		err = jqTool.Evaluate(`.callback`, value, &uris)
 		if err != nil {
-			panic("the callback is mandary for subscription")
+			b.logger.Error(
+				"Subscription  ", key,
+				" does not have callback included",
+			)
+			continue
 		}
 		subInfo.uris = uris
 
