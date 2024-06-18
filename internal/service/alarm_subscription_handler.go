@@ -42,7 +42,7 @@ const (
 // alarmSubscriptionHandlerBuilder contains the data and logic needed to create a new deployment
 // manager collection handler. Don't create instances of this type directly, use the
 // NewAlarmSubscriptionHandler function instead.
-type alarmSubscriptionHandlerBuilder struct {
+type AlarmSubscriptionHandlerBuilder struct {
 	logger         *slog.Logger
 	loggingWrapper func(http.RoundTripper) http.RoundTripper
 	cloudID        string
@@ -69,48 +69,48 @@ type alarmSubscriptionHandler struct {
 
 // NewAlarmSubscriptionHandler creates a builder that can then be used to configure and create a
 // handler for the collection of deployment managers.
-func NewAlarmSubscriptionHandler() *alarmSubscriptionHandlerBuilder {
-	return &alarmSubscriptionHandlerBuilder{}
+func NewAlarmSubscriptionHandler() *AlarmSubscriptionHandlerBuilder {
+	return &AlarmSubscriptionHandlerBuilder{}
 }
 
 // SetLogger sets the logger that the handler will use to write to the log. This is mandatory.
-func (b *alarmSubscriptionHandlerBuilder) SetLogger(
-	value *slog.Logger) *alarmSubscriptionHandlerBuilder {
+func (b *AlarmSubscriptionHandlerBuilder) SetLogger(
+	value *slog.Logger) *AlarmSubscriptionHandlerBuilder {
 	b.logger = value
 	return b
 }
 
 // SetLoggingWrapper sets the wrapper that will be used to configure logging for the HTTP clients
 // used to connect to other servers, including the backend server. This is optional.
-func (b *alarmSubscriptionHandlerBuilder) SetLoggingWrapper(
-	value func(http.RoundTripper) http.RoundTripper) *alarmSubscriptionHandlerBuilder {
+func (b *AlarmSubscriptionHandlerBuilder) SetLoggingWrapper(
+	value func(http.RoundTripper) http.RoundTripper) *AlarmSubscriptionHandlerBuilder {
 	b.loggingWrapper = value
 	return b
 }
 
 // SetCloudID sets the identifier of the O-Cloud of this handler. This is mandatory.
-func (b *alarmSubscriptionHandlerBuilder) SetCloudID(
-	value string) *alarmSubscriptionHandlerBuilder {
+func (b *AlarmSubscriptionHandlerBuilder) SetCloudID(
+	value string) *AlarmSubscriptionHandlerBuilder {
 	b.cloudID = value
 	return b
 }
 
 // SetExtensions sets the fields that will be added to the extensions.
-func (b *alarmSubscriptionHandlerBuilder) SetExtensions(
-	values ...string) *alarmSubscriptionHandlerBuilder {
+func (b *AlarmSubscriptionHandlerBuilder) SetExtensions(
+	values ...string) *AlarmSubscriptionHandlerBuilder {
 	b.extensions = values
 	return b
 }
 
 // SetExtensions sets the fields that will be added to the extensions.
-func (b *alarmSubscriptionHandlerBuilder) SetKubeClient(
-	kubeClient *k8s.Client) *alarmSubscriptionHandlerBuilder {
+func (b *AlarmSubscriptionHandlerBuilder) SetKubeClient(
+	kubeClient *k8s.Client) *AlarmSubscriptionHandlerBuilder {
 	b.kubeClient = kubeClient
 	return b
 }
 
 // Build uses the data stored in the builder to create anad configure a new handler.
-func (b *alarmSubscriptionHandlerBuilder) Build(ctx context.Context) (
+func (b *AlarmSubscriptionHandlerBuilder) Build(ctx context.Context) (
 	result *alarmSubscriptionHandler, err error) {
 	// Check parameters:
 	if b.logger == nil {

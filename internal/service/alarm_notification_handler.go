@@ -36,7 +36,7 @@ var singleAlarmNotificationHandle *alarmNotificationHandler = nil
 // AlarmNotificationManagerHandlerBuilder contains the data and logic needed to create a new alarm notification
 // collection handler. Don't create instances of this type directly, use the
 // NewAlarmNotificationHandler function instead.
-type alarmNotificationHandlerBuilder struct {
+type AlarmNotificationHandlerBuilder struct {
 	logger         *slog.Logger
 	loggingWrapper func(http.RoundTripper) http.RoundTripper
 	cloudID        string
@@ -69,48 +69,48 @@ type alarmNotificationHandler struct {
 
 // NewAlarmNotificationHandler creates a builder that can then be used to configure and create a
 // handler for the collection of deployment managers.
-func NewAlarmNotificationHandler() *alarmNotificationHandlerBuilder {
-	return &alarmNotificationHandlerBuilder{}
+func NewAlarmNotificationHandler() *AlarmNotificationHandlerBuilder {
+	return &AlarmNotificationHandlerBuilder{}
 }
 
 // SetLogger sets the logger that the handler will use to write to the log. This is mandatory.
-func (b *alarmNotificationHandlerBuilder) SetLogger(
-	value *slog.Logger) *alarmNotificationHandlerBuilder {
+func (b *AlarmNotificationHandlerBuilder) SetLogger(
+	value *slog.Logger) *AlarmNotificationHandlerBuilder {
 	b.logger = value
 	return b
 }
 
 // SetLoggingWrapper sets the wrapper that will be used to configure logging for the HTTP clients
 // used to connect to other servers, including the backend server. This is optional.
-func (b *alarmNotificationHandlerBuilder) SetLoggingWrapper(
-	value func(http.RoundTripper) http.RoundTripper) *alarmNotificationHandlerBuilder {
+func (b *AlarmNotificationHandlerBuilder) SetLoggingWrapper(
+	value func(http.RoundTripper) http.RoundTripper) *AlarmNotificationHandlerBuilder {
 	b.loggingWrapper = value
 	return b
 }
 
 // SetCloudID sets the identifier of the O-Cloud of this handler. This is mandatory.
-func (b *alarmNotificationHandlerBuilder) SetCloudID(
-	value string) *alarmNotificationHandlerBuilder {
+func (b *AlarmNotificationHandlerBuilder) SetCloudID(
+	value string) *AlarmNotificationHandlerBuilder {
 	b.cloudID = value
 	return b
 }
 
 // SetExtensions sets the fields that will be added to the extensions.
-func (b *alarmNotificationHandlerBuilder) SetExtensions(
-	values ...string) *alarmNotificationHandlerBuilder {
+func (b *AlarmNotificationHandlerBuilder) SetExtensions(
+	values ...string) *AlarmNotificationHandlerBuilder {
 	b.extensions = values
 	return b
 }
 
 // SetExtensions sets the fields that will be added to the extensions.
-func (b *alarmNotificationHandlerBuilder) SetKubeClient(
-	kubeClient *k8s.Client) *alarmNotificationHandlerBuilder {
+func (b *AlarmNotificationHandlerBuilder) SetKubeClient(
+	kubeClient *k8s.Client) *AlarmNotificationHandlerBuilder {
 	b.kubeClient = kubeClient
 	return b
 }
 
 // Build uses the data stored in the builder to create anad configure a new handler.
-func (b *alarmNotificationHandlerBuilder) Build(ctx context.Context) (
+func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 	result *alarmNotificationHandler, err error) {
 	// Check parameters:
 	if b.logger == nil {
