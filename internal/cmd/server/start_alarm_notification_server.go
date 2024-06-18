@@ -119,21 +119,6 @@ func (c *AlarmNotificationServerCommand) run(cmd *cobra.Command, argv []string) 
 		"value", cloudID,
 	)
 
-	// Get the extensions details:
-	extensions, err := flags.GetStringArray(extensionsFlagName)
-	if err != nil {
-		logger.Error(
-			"Failed to extension flag",
-			"flag", extensionsFlagName,
-			"error", err.Error(),
-		)
-		return exit.Error(1)
-	}
-	logger.Info(
-		"alarm notification extensions details",
-		slog.Any("extensions", extensions),
-	)
-
 	// Create the logging wrapper:
 	loggingWrapper, err := logging.NewTransportWrapper().
 		SetLogger(logger).
@@ -215,7 +200,6 @@ func (c *AlarmNotificationServerCommand) run(cmd *cobra.Command, argv []string) 
 		SetLogger(logger).
 		SetLoggingWrapper(loggingWrapper).
 		SetCloudID(cloudID).
-		SetExtensions(extensions...).
 		SetKubeClient(kubeClient).
 		Build(ctx)
 

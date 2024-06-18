@@ -40,7 +40,6 @@ type AlarmNotificationHandlerBuilder struct {
 	logger         *slog.Logger
 	loggingWrapper func(http.RoundTripper) http.RoundTripper
 	cloudID        string
-	extensions     []string
 	kubeClient     *k8s.Client
 }
 
@@ -54,7 +53,6 @@ type alarmNotificationHandler struct {
 	logger            *slog.Logger
 	loggingWrapper    func(http.RoundTripper) http.RoundTripper
 	cloudID           string
-	extensions        []string
 	jsonAPI           jsoniter.API
 	selectorEvaluator *search.SelectorEvaluator
 	jqTool            *jq.Tool
@@ -95,14 +93,7 @@ func (b *AlarmNotificationHandlerBuilder) SetCloudID(
 	return b
 }
 
-// SetExtensions sets the fields that will be added to the extensions.
-func (b *AlarmNotificationHandlerBuilder) SetExtensions(
-	values ...string) *AlarmNotificationHandlerBuilder {
-	b.extensions = values
-	return b
-}
-
-// SetExtensions sets the fields that will be added to the extensions.
+// SetKubeClient sets the kubeClient.
 func (b *AlarmNotificationHandlerBuilder) SetKubeClient(
 	kubeClient *k8s.Client) *AlarmNotificationHandlerBuilder {
 	b.kubeClient = kubeClient
@@ -153,14 +144,6 @@ func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 		Build()
 	if err != nil {
 		return
-	}
-
-	// Check that extensions are at least syntactically valid:
-	for _, extension := range b.extensions {
-		_, err = jqTool.Compile(extension)
-		if err != nil {
-			return
-		}
 	}
 
 	alarmSubscriptionSearcher := newAlarmSubscriptionSearcher()
