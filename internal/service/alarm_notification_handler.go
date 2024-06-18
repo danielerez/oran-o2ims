@@ -33,8 +33,8 @@ import (
 // singlton alarm notification handler
 var singleAlarmNotificationHandle *alarmNotificationHandler = nil
 
-// AlarmNotificationManagerHandlerBuilder contains the data and logic needed to create a new alarm notification
-// collection handler. Don't create instances of this type directly, use the
+// AlarmNotificationManagerHandlerBuilder contains the data and logic needed to construct
+// alarm notification handler. Don't create instances of this type directly, use the
 // NewAlarmNotificationHandler function instead.
 type AlarmNotificationHandlerBuilder struct {
 	logger         *slog.Logger
@@ -46,7 +46,8 @@ type AlarmNotificationHandlerBuilder struct {
 // key string is uuid
 type alarmSubIdSet map[string]struct{}
 
-// alarmNotificationHander knows how to respond to requests to list deployment managers.
+// alarmNotificationHander will receive the alarts from openshift alert manager,
+// match alarm subscription filter rules with the alerts/alarm, and send out matched alarm notifications
 // Don't create instances of this type directly, use the NewAlarmNotificationHandler function
 // instead.
 type alarmNotificationHandler struct {
@@ -66,7 +67,7 @@ type alarmNotificationHandler struct {
 }
 
 // NewAlarmNotificationHandler creates a builder that can then be used to configure and create a
-// handler for the collection of deployment managers.
+// handler for alarmNotificationHandler.
 func NewAlarmNotificationHandler() *AlarmNotificationHandlerBuilder {
 	return &AlarmNotificationHandlerBuilder{}
 }

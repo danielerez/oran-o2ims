@@ -39,8 +39,8 @@ const (
 	FieldOwner                     = "oran-o2ims"
 )
 
-// alarmSubscriptionHandlerBuilder contains the data and logic needed to create a new deployment
-// manager collection handler. Don't create instances of this type directly, use the
+// AlarmSubscriptionHandlerBuilder contains the data and logic needed to create a new
+// alarm subscription handler. Don't create instance of this type directly, use the
 // NewAlarmSubscriptionHandler function instead.
 type AlarmSubscriptionHandlerBuilder struct {
 	logger         *slog.Logger
@@ -50,7 +50,7 @@ type AlarmSubscriptionHandlerBuilder struct {
 	kubeClient     *k8s.Client
 }
 
-// alarmSubscriptionHander knows how to respond to requests to list deployment managers.
+// alarmSubscriptionHander knows how to respond to requests to list alarm subscriptions.
 // Don't create instances of this type directly, use the NewAlarmSubscriptionHandler function
 // instead.
 type alarmSubscriptionHandler struct {
@@ -68,7 +68,7 @@ type alarmSubscriptionHandler struct {
 }
 
 // NewAlarmSubscriptionHandler creates a builder that can then be used to configure and create a
-// handler for the collection of deployment managers.
+// handler for the alarm subscription handler.
 func NewAlarmSubscriptionHandler() *AlarmSubscriptionHandlerBuilder {
 	return &AlarmSubscriptionHandlerBuilder{}
 }
