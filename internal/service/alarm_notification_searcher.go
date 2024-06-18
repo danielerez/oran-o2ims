@@ -78,7 +78,7 @@ func (b *alarmSubscriptionSearcher) build() {
 	if err != nil {
 		b.logger.Error(
 			"failed to create filter expression parser: ",
-			slog.String("error: ", err.Error()),
+			slog.String("error", err.Error()),
 		)
 		return
 	}
@@ -158,7 +158,7 @@ func (b *alarmSubscriptionSearcher) pocessSubscriptionMapForSearcher(subscriptio
 			b.logger.Debug(
 				"pocessSubscriptionMapForSearcher ",
 				"subscription: ", key,
-				" error: ", err.Error(),
+				" error", err.Error(),
 			)
 		}
 	}
@@ -199,7 +199,7 @@ func (h *alarmNotificationHandler) getSubscriptionIdsFromAlarm(ctx context.Conte
 					h.logger.Debug(
 						"pocessSubscriptionMapForSearcher ",
 						"subscription: ", subId,
-						" error: ", err.Error(),
+						slog.String("error", err.Error()),
 					)
 					continue
 				}

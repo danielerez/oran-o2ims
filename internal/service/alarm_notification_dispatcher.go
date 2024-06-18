@@ -29,7 +29,7 @@ func (h *alarmNotificationHandler) Add(ctx context.Context,
 
 	subIdSet := h.getSubscriptionIdsFromAlarm(ctx, request.Object)
 
-	//now look id_set and send http packets to URIs
+	//now look up subscriptions id_set matched and send http packets to URIs
 	for key := range subIdSet {
 		subInfo, ok := h.getSubscriptionInfo(ctx, key)
 
@@ -43,7 +43,8 @@ func (h *alarmNotificationHandler) Add(ctx context.Context,
 		}
 
 		var obj data.Object
-		// alarmNotificationType needs to be added
+		// TODO:
+		// determin if alarmNotificationType needs to be added
 
 		err = h.jqTool.Evaluate(
 			`{
@@ -66,7 +67,7 @@ func (h *alarmNotificationHandler) Add(ctx context.Context,
 			if err != nil {
 				h.logger.Debug(
 					"alarmNotificationHandler failed to get content of new packet",
-					slog.String("error: ", err.Error()),
+					slog.String("error", err.Error()),
 				)
 			}
 
@@ -74,7 +75,7 @@ func (h *alarmNotificationHandler) Add(ctx context.Context,
 			resp, err := h.httpClient.Post(subInfo.uris, "application/json", bytes.NewBuffer(content))
 			if err != nil {
 				h.logger.Debug("alarmNotificationHandler failed to post packet",
-					slog.String("error: ", err.Error()),
+					slog.String("error", err.Error()),
 				)
 				return
 			}

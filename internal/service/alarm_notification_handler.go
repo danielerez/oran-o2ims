@@ -19,7 +19,6 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"slices"
 	"sync"
 	"time"
 
@@ -187,7 +186,6 @@ func (b *alarmNotificationHandlerBuilder) Build(ctx context.Context) (
 		logger:                    b.logger,
 		loggingWrapper:            b.loggingWrapper,
 		cloudID:                   b.cloudID,
-		extensions:                slices.Clone(b.extensions),
 		selectorEvaluator:         selectorEvaluator,
 		jsonAPI:                   jsonAPI,
 		jqTool:                    jqTool,
@@ -211,7 +209,7 @@ func (b *alarmNotificationHandlerBuilder) Build(ctx context.Context) (
 	if err != nil {
 		b.logger.Error(
 			"alarmNotificationHandler failed to recovery from persistStore ",
-			slog.String(": ", err.Error()),
+			slog.String("error", err.Error()),
 		)
 	}
 
@@ -219,7 +217,7 @@ func (b *alarmNotificationHandlerBuilder) Build(ctx context.Context) (
 	if err != nil {
 		b.logger.Error(
 			"alarmNotificationHandler failed to watch persist store changes ",
-			slog.String(": ", err.Error()),
+			slog.String("error", err.Error()),
 		)
 	}
 	return
@@ -234,7 +232,7 @@ func (h *alarmNotificationHandler) recoveryFromPersistStore(ctx context.Context)
 	if err != nil {
 		h.logger.Error(
 			"alarmNotificationHandler failed building the indexes ",
-			slog.String(": ", err.Error()),
+			slog.String("error", err.Error()),
 		)
 
 	}
@@ -265,7 +263,7 @@ func (h *alarmNotificationHandler) assignSubscriptionMap(newMap *map[string]data
 	if err != nil {
 		h.logger.Error(
 			"pocessSubscriptionMapForSearcher ",
-			"return error: ", err.Error(),
+			slog.String("error", err.Error()),
 		)
 	}
 	return
@@ -280,7 +278,7 @@ func ProcessStorageChanges(newMap *map[string]data.Object) {
 	if err != nil {
 		singleAlarmNotificationHandle.logger.Error(
 			"alarmNotificationHandler failed to watch persist store changes ",
-			slog.String(": ", err.Error()),
+			slog.String("error", err.Error()),
 		)
 	}
 
