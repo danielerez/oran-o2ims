@@ -168,7 +168,8 @@ func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 		)
 	}
 	// Create and populate the object:
-	result = &alarmNotificationHandler{
+
+	handler := &alarmNotificationHandler{
 		logger:                    b.logger,
 		loggingWrapper:            b.loggingWrapper,
 		cloudID:                   b.cloudID,
@@ -181,7 +182,6 @@ func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 		subscriptionSearcher:      alarmSubscriptionSearcher,
 		httpClient:                httpClient,
 	}
-	singleAlarmNotificationHandle = result
 
 	b.logger.Debug(
 		"alarmNotificationHandler build:",
@@ -194,6 +194,7 @@ func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 			"alarmNotificationHandler failed to recovery from persistStore ",
 			slog.String("error", err.Error()),
 		)
+		return
 	}
 
 	err = result.watchPersistStore(ctx)
@@ -202,7 +203,10 @@ func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 			"alarmNotificationHandler failed to watch persist store changes ",
 			slog.String("error", err.Error()),
 		)
+		return
 	}
+	result = handler
+	singleAlarmNotificationHandle = result
 	return
 }
 
