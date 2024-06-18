@@ -90,7 +90,7 @@ var _ = Describe("alarm Subscription handler", func() {
 				},
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: TestNamespace,
-					Name:      TestConfigmapName,
+					Name:      AlarmSubscriptionConfigmapName,
 				},
 				Data: nil,
 			}

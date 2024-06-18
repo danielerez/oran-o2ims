@@ -170,7 +170,7 @@ func (b *alarmNotificationHandlerBuilder) Build(ctx context.Context) (
 	// create persist storeage option
 	persistStore := persiststorage.NewKubeConfigMapStore().
 		SetNamespace(TestNamespace).
-		SetName(TestConfigmapName).
+		SetName(AlarmSubscriptionConfigmapName).
 		SetFieldOwnder(FieldOwner).
 		SetJsonAPI(&jsonAPI).
 		SetClient(b.kubeClient)

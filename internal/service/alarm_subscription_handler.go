@@ -34,9 +34,9 @@ import (
 )
 
 const (
-	TestNamespace     = "orantest"
-	TestConfigmapName = "orantestconfigmapalarmsub"
-	FieldOwner        = "oran-o2ims"
+	TestNamespace                  = "orantest"
+	AlarmSubscriptionConfigmapName = "oran-o2ims-alarm-subscriptions"
+	FieldOwner                     = "oran-o2ims"
 )
 
 // alarmSubscriptionHandlerBuilder contains the data and logic needed to create a new deployment
@@ -167,7 +167,7 @@ func (b *alarmSubscriptionHandlerBuilder) Build(ctx context.Context) (
 	// create persist storeage option
 	persistStore := persiststorage.NewKubeConfigMapStore().
 		SetNamespace(TestNamespace).
-		SetName(TestConfigmapName).
+		SetName(AlarmSubscriptionConfigmapName).
 		SetFieldOwnder(FieldOwner).
 		SetJsonAPI(&jsonAPI).
 		SetClient(b.kubeClient)
