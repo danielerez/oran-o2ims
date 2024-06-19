@@ -80,7 +80,10 @@
                                 "alarm-notification-server",
                                 "--log-level=debug",
                                 "--log-field=server=alarm-notification",
-                                "--cloud-id=6575154c-72fc-4ed8-9a87-a81885ab38bb"
+                                "--cloud-id=6575154c-72fc-4ed8-9a87-a81885ab38bb",
+                                "--resource-server-url=${env:RESOURCE_SERVER_URL}",
+                                "--resource-server-token=${env:RESOURCE_SERVER_TOKEN}"
+
                         ]
                 },
                 {

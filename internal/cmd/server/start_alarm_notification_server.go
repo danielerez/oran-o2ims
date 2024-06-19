@@ -195,12 +195,43 @@ func (c *AlarmNotificationServerCommand) run(cmd *cobra.Command, argv []string) 
 		return exit.Error(1)
 	}
 
+	// Get the resource server details:
+	resourceServerURL, err := flags.GetString(resourceServerURLFlagName)
+	if err != nil {
+		logger.ErrorContext(
+			ctx,
+			"Failed to get resource server URL flag",
+			"flag", resourceServerURLFlagName,
+			"error", err.Error(),
+		)
+		return exit.Error(1)
+	}
+	if resourceServerURL == "" {
+		logger.ErrorContext(
+			ctx,
+			"Resource server URL is empty",
+			"flag", resourceServerURLFlagName,
+		)
+		return exit.Error(1)
+	}
+	resourceServerToken, err := flags.GetString(resourceServerTokenFlagName)
+	if err != nil || resourceServerToken == "" {
+		logger.ErrorContext(
+			ctx,
+			"Resource server URL is empty",
+			"flag", resourceServerTokenFlagName,
+		)
+		return exit.Error(1)
+	}
+
 	// Create the handler:
 	handler, err := service.NewAlarmNotificationHandler().
 		SetLogger(logger).
 		SetLoggingWrapper(loggingWrapper).
 		SetCloudID(cloudID).
 		SetKubeClient(kubeClient).
+		SetResourceServerURL(resourceServerURL).
+		SetResourceServerToken(resourceServerToken).
 		Build(ctx)
 
 	if err != nil {

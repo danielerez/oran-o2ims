@@ -289,6 +289,15 @@ alarm-subscription-server` [configuration](.vscode/launch.json).
 
 The alarm-notification-server should use together with alarm subscription server. The alarm subscription sever accept and manages the alarm subscriptions. The alarm notificaton servers synch the alarm subscriptions via perisist storage. To use the configmap to persist the subscriptions, the namespace "orantest" should be created at hub cluster for now (will use official oranims namespace in future). The alarm notification server accept the alerts, match the subscription filter, build and send out the alarm notification based on url in the subscription.
 
+The required Resource server URL and token can be obtained as follows:
+
+```
+$ export RESOURCE_SERVER_URL=http://localhost:8002/o2ims-infrastructureInventory/v1/
+$ export RESOURCE_SERVER_TOKEN=$(
+  oc create token -n openshift-oauth-apiserver oauth-apiserver-sa --duration=24h
+)
+```
+
 Start the alarm notification server with a command like this:
 
 ```
@@ -299,7 +308,9 @@ $./oran-o2ims start alarm-notification-server \
 --log-field="pid=%p" \
 --api-listener-address="127.0.0.1:8010" \
 --metrics-listener-address="127.0.0.1:8011" \
---cloud-id="123" 
+--cloud-id="123" \
+--resource-server-url="${RESOURCE_SERVER_URL}"
+--resource-server-token="${RESOURCE_SERVER_TOKEN}" \
 ```
 
 Note that by default all the servers listen on `localhost:8000`, so there will

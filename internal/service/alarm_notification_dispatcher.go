@@ -19,12 +19,9 @@ func (h *alarmNotificationHandler) Add(ctx context.Context,
 		"alarmNotificationHandler Add",
 	)
 
-	var eventRecordId string
-	err = h.jqTool.Evaluate(`.alarmEventRecordId`, request.Object, &eventRecordId)
+	alarmEventRecord, err := h.alarmMapper.MapAlertItem(ctx, request.Object)
 	if err != nil {
-		h.logger.Debug(
-			"alarm does not have alarmEventRecordId included ",
-		)
+		return
 	}
 
 	subIdSet := h.getSubscriptionIdsFromAlarm(ctx, request.Object)
@@ -53,11 +50,11 @@ func (h *alarmNotificationHandler) Add(ctx context.Context,
 				"objectRef": $objRef,
 				"alarmEventRecord": $alarmEvent
 			}`,
-			request.Object, &obj,
+			alarmEventRecord, &obj,
 			jq.String("$alarmConsumerSubId", subInfo.consumerSubscriptionId),
-			jq.String("$objRef", eventRecordId),
+			jq.String("$objRef", alarmEventRecord["alarmEventRecordId"].(string)),
 			jq.String("$subId", key),
-			jq.Any("$alarmEvent", request.Object),
+			jq.Any("$alarmEvent", alarmEventRecord),
 		)
 
 		//following function will send out the notification packet based on subscription

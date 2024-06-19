@@ -37,10 +37,12 @@ var singleAlarmNotificationHandle *alarmNotificationHandler = nil
 // alarm notification handler. Don't create instances of this type directly, use the
 // NewAlarmNotificationHandler function instead.
 type AlarmNotificationHandlerBuilder struct {
-	logger         *slog.Logger
-	loggingWrapper func(http.RoundTripper) http.RoundTripper
-	cloudID        string
-	kubeClient     *k8s.Client
+	logger              *slog.Logger
+	loggingWrapper      func(http.RoundTripper) http.RoundTripper
+	cloudID             string
+	kubeClient          *k8s.Client
+	resourceServerURL   string
+	resourceServerToken string
 }
 
 // key string is uuid
@@ -57,6 +59,7 @@ type alarmNotificationHandler struct {
 	jsonAPI           jsoniter.API
 	selectorEvaluator *search.SelectorEvaluator
 	jqTool            *jq.Tool
+	alarmMapper       *AlarmMapper
 
 	//structures for notification
 	subscriptionMapMemoryLock *sync.RWMutex
@@ -101,6 +104,22 @@ func (b *AlarmNotificationHandlerBuilder) SetKubeClient(
 	return b
 }
 
+// SetResourceServerURL sets the URL of the resource server. This is mandatory.
+// The resource server is used for mapping Alarms to Resources.
+func (b *AlarmNotificationHandlerBuilder) SetResourceServerURL(
+	value string) *AlarmNotificationHandlerBuilder {
+	b.resourceServerURL = value
+	return b
+}
+
+// SetResourceServerToken sets the authentication token that will be used to authenticate
+// with to the resource server. This is mandatory.
+func (b *AlarmNotificationHandlerBuilder) SetResourceServerToken(
+	value string) *AlarmNotificationHandlerBuilder {
+	b.resourceServerToken = value
+	return b
+}
+
 // Build uses the data stored in the builder to create anad configure a new handler.
 func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 	result *alarmNotificationHandler, err error) {
@@ -116,6 +135,16 @@ func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 
 	if b.kubeClient == nil {
 		err = errors.New("kubeClient is mandatory")
+		return
+	}
+
+	if b.resourceServerURL == "" {
+		err = errors.New("resource server URL is mandatory")
+		return
+	}
+
+	if b.resourceServerToken == "" {
+		err = errors.New("resource server token is mandatory")
 		return
 	}
 
@@ -171,8 +200,18 @@ func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 			"alarmNotificationHandler build: the singleAlarmNotificationHandle is not nil return",
 		)
 	}
-	// Create and populate the object:
 
+	alarmMapper, err := NewAlarmMapper().
+		SetLogger(b.logger).
+		SetBackendClient(&httpClient).
+		SetResourceServerURL(b.resourceServerURL).
+		SetResourceServerToken(b.resourceServerToken).
+		Build()
+	if err != nil {
+		return
+	}
+
+	// Create and populate the object:
 	handler := &alarmNotificationHandler{
 		logger:                    b.logger,
 		loggingWrapper:            b.loggingWrapper,
@@ -185,6 +224,7 @@ func (b *AlarmNotificationHandlerBuilder) Build(ctx context.Context) (
 		persistStore:              persistStore,
 		subscriptionSearcher:      alarmSubscriptionSearcher,
 		httpClient:                httpClient,
+		alarmMapper:               alarmMapper,
 	}
 
 	b.logger.Debug(
